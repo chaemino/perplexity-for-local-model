@@ -37,10 +37,9 @@ class Evaluate():
 
         ### dataload
         data = self.data
-        inputs = [d['inputs'] for d in data] ### 'inputs' is variable
 
         encodings = self.tokenizer(
-                inputs,
+                data,
                 return_tensors="pt", 
                 padding="max_length", 
                 max_length=self.max_length, 
@@ -77,20 +76,9 @@ class Evaluate():
     def dataload(self, data_dir=None, test_data=None): ### need custom for each task
         ## load data
         with open(data_dir+test_data, 'r') as f:
-            data = [json.loads(d) for d in f]
-
-        results = list()
-        for item in data:
-            item = {
-                    'inputs': item['inputs'],
-                    'labels': item['labels'],
-                    }
-            item['inputs'] = self.clean_string(item['inputs'])
-            item['labels'] = self.clean_string(item['labels'])
-            item['inputs'] = f"{item['inputs']} #"
-
-            results.append(item)
-        return results
+            data = f.readlines()
+        data = [sent.replace('\n', '').replace('\"', '') for sent in data]
+        return data
 
     def clean_string(self, text): ## need custom for each task
         text = re.sub('[ \t\r\n]+', ' ', text)
